@@ -1,5 +1,11 @@
 # ⚡ Germany Power Pulse
 
+### [🌐 View the public project on GitHub](https://github.com/hjsarker/germany-power-pulse)
+
+**Portfolio links:** [Project overview](https://github.com/hjsarker/germany-power-pulse) · [Dashboard source code](https://github.com/hjsarker/germany-power-pulse/blob/main/app.py) · [Automated test results](https://github.com/hjsarker/germany-power-pulse/actions)
+
+> **Demo status:** The repository is public. A hosted interactive dashboard URL is **not available yet**. The Streamlit application can be run locally using the instructions below.
+
 **The power behind the price.**
 
 An interactive electricity-market analytics portfolio project using official German generation, demand and day-ahead wholesale-price data from **[Bundesnetzagentur | SMARD.de](https://www.smard.de/en)**.
