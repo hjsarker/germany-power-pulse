@@ -20,4 +20,65 @@ $('#failureNotes').textContent=Object.keys(raw.failed_series||{}).length?'Some A
 }
 document.querySelectorAll('[data-tab]').forEach(b=>b.addEventListener('click',()=>{document.querySelectorAll('[data-tab]').forEach(t=>t.classList.toggle('active',t===b));document.querySelectorAll('.panel').forEach(p=>p.classList.toggle('active',p.id===b.dataset.tab));if(raw){setTimeout(()=>{document.querySelectorAll('.panel.active .plot').forEach(el=>Plotly.Plots.resize(el))},10)}}));
 $('#days').addEventListener('change',update);$('#download').addEventListener('click',()=>{if(!selected.length)return;const keys=['ts',...Object.keys(labels)],data=[keys.join(','),...selected.map(r=>keys.map(k=>r[k]??'').join(','))].join('\n');const a=document.createElement('a');a.href=URL.createObjectURL(new Blob([data],{type:'text/csv'}));a.download='germany-power-pulse.csv';a.click();setTimeout(()=>URL.revokeObjectURL(a.href),500)});
-(async()=>{try{if(typeof Plotly==='undefined')throw Error('Charts library did not load');const res=await fetch('data/market.json',{cache:'no-store'});if(!res.ok)throw Error('Snapshot not published yet (HTTP '+res.status+')');raw=await res.json();if(!Array.isArray(raw.records)||!raw.records.length)throw Error('No verified market observations');raw.records.sort((a,b)=>a.ts.localeCompare(b.ts));$('#status').textContent='● Official historical observations loaded';$('#updated').textContent='Source: Bundesnetzagentur | SMARD.de · CC BY 4.0 · Dataset generated '+new Date(raw.generated_at_utc).toLocaleString('en-GB',{timeZone:'Europe/Berlin'})+' (Berlin time)';update()}catch(err){$('#status').textContent='Data temporarily unavailable: '+err.message;$('#status').classList.add('error');$('#coverage').textContent='No synthetic fallback data used';console.error(err)}})();
+
+const berlinTime=value=>new Intl.DateTimeFormat('en-GB',{
+  timeZone:'Europe/Berlin',year:'numeric',month:'short',day:'numeric',
+  hour:'2-digit',minute:'2-digit',timeZoneName:'short'
+}).format(new Date(value));
+let checkingUpdates=false;
+
+/** GitHub Pages serves a static JSON snapshot. This checks for a newer published
+ * snapshot; only the scheduled GitHub Actions workflow fetches fresh SMARD data. */
+async function checkPublishedData(initial=false){
+  if(checkingUpdates)return;
+  checkingUpdates=true;
+  const button=$('#checkUpdates');
+  button.disabled=true;
+  button.textContent='Checking…';
+  $('#refreshStatus').classList.remove('error');
+  $('#refreshStatus').textContent='Checking the latest published dataset...';
+  try{
+    if(typeof Plotly==='undefined')throw Error('Charts library did not load');
+    const url='data/market.json?check='+Date.now();
+    const res=await fetch(url,{cache:'no-store'});
+    if(!res.ok)throw Error('Published dataset unavailable (HTTP '+res.status+')');
+    const payload=await res.json();
+    if(!Array.isArray(payload.records)||!payload.records.length)throw Error('No verified market observations in published snapshot');
+    const generatedAt=Date.parse(payload.generated_at_utc);
+    if(!Number.isFinite(generatedAt))throw Error('Dataset refresh timestamp is missing or invalid');
+    payload.records.sort((a,b)=>a.ts.localeCompare(b.ts));
+    const previous=raw?Date.parse(raw.generated_at_utc):null;
+    if(raw && generatedAt<=previous){
+      $('#refreshStatus').textContent='Checked '+berlinTime(new Date())+'. No newer published dataset yet.';
+      return;
+    }
+    raw=payload;
+    const lastPrice=[...raw.records].reverse().find(r=>r.price!=null);
+    $('#lastRefresh').dateTime=payload.generated_at_utc;
+    $('#lastRefresh').textContent=berlinTime(payload.generated_at_utc);
+    $('#latestObservation').textContent=lastPrice?berlinTime(lastPrice.ts):'Unavailable';
+    if(lastPrice)$('#latestObservation').dateTime=lastPrice.ts;
+    $('#status').textContent='● Official historical observations loaded';
+    $('#status').classList.remove('error');
+    $('#updated').textContent='Source: Bundesnetzagentur | SMARD.de · CC BY 4.0 · Last published snapshot '+berlinTime(payload.generated_at_utc);
+    $('#refreshStatus').textContent=initial
+      ?'Daily automatic updates. This button checks published data only, not SMARD.'
+      :'Newer published data loaded. Checked '+berlinTime(new Date())+'.';
+    update();
+  }catch(err){
+    $('#refreshStatus').textContent='Could not check for updates: '+err.message;
+    $('#refreshStatus').classList.add('error');
+    if(!raw){
+      $('#status').textContent='Data temporarily unavailable: '+err.message;
+      $('#status').classList.add('error');
+      $('#coverage').textContent='No synthetic fallback data used';
+    }
+    console.error(err);
+  }finally{
+    checkingUpdates=false;
+    button.disabled=false;
+    button.textContent='↻ Check for new data';
+  }
+}
+$('#checkUpdates').addEventListener('click',()=>checkPublishedData(false));
+checkPublishedData(true);
