@@ -90,6 +90,12 @@ All API timestamps use UTC. Charts use Europe/Berlin; the autumn daylight-saving
 
 This is an **early portfolio release**, not a production service. Offline unit tests pass locally, but the real SMARD API integration must be smoke-tested in an internet-connected runtime before claiming a public dashboard is fully operational. Source observations can be incomplete or revised, and correlations do not establish causation.
 
+## Data freshness and manual checks
+
+The hosted GitHub Pages dashboard shows **Last data refresh** (the timestamp when the latest successful GitHub Actions job generated its official SMARD snapshot), and **Latest observed hour** (the most recent available wholesale-price observation). All displayed times use **Europe/Berlin**.
+
+The **Check for new data** button fetches the latest published JSON snapshot without browser caching and updates the charts when a newer snapshot exists. It **does not** start a fresh SMARD API call or a GitHub Actions run: GitHub Pages is static hosting. The workflow is scheduled to fetch and publish updated observations daily, although GitHub may delay scheduled runs.
+
 ## Public demo
 
 **[Open the interactive Germany Power Pulse dashboard](https://hjsarker.github.io/germany-power-pulse/)**. The free GitHub Pages website uses a scheduled GitHub Actions workflow to fetch official SMARD observations and publish a static data snapshot. The separate Streamlit application can be run locally.
