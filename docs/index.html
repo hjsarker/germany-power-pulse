@@ -2,7 +2,18 @@
 <html lang="en"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1"><meta name="theme-color" content="#0c1625"><title>Germany Power Pulse | Electricity Market Dashboard</title><meta name="description" content="Interactive German electricity market dashboard showing official SMARD wholesale prices, generation and grid load."><script src="https://cdn.plot.ly/plotly-2.35.2.min.js" defer></script><link rel="stylesheet" href="styles.css"><script src="dashboard.js" defer></script></head>
 <body><header><div class="bar"><strong>⚡ GERMANY POWER PULSE</strong><span class="chip">Official SMARD data</span></div></header><main>
 <section class="hero"><small>GERMAN ELECTRICITY MARKET INTELLIGENCE</small><h1>The power behind<br>the price.</h1><p>Explore the relationships between renewable electricity generation, grid load and wholesale prices in Germany using official hourly data.</p><div class="status" id="status" role="status">Loading official dataset...</div></section>
-<section class="controls" aria-label="Dashboard controls"><label>View period <select id="days"><option value="7">Last 7 days</option><option value="14">Last 14 days</option><option value="30" selected>Last 30 days</option></select></label><div id="coverage">Waiting for data</div></section>
+<section class="controls" aria-label="Dashboard controls">
+  <label>View period <select id="days"><option value="7">Last 7 days</option><option value="14">Last 14 days</option><option value="30" selected>Last 30 days</option></select></label>
+  <div class="refreshbox">
+    <div class="refreshdetails">
+      <strong>Last data refresh: <time id="lastRefresh">Not loaded</time></strong>
+      <span>Latest observed hour: <time id="latestObservation">Not loaded</time></span>
+      <span id="refreshStatus" role="status" aria-live="polite">Updates automatically through GitHub Actions each day.</span>
+    </div>
+    <button id="checkUpdates" type="button" title="Check for a newer published dataset">↻ Check for new data</button>
+  </div>
+  <div id="coverage">Waiting for data</div>
+</section>
 <section class="metrics" aria-label="Key market metrics"><article><small>AVERAGE WHOLESALE PRICE</small><h2 id="price">...</h2><p>€/MWh, day-ahead market</p></article><article><small>NEGATIVE-PRICE HOURS</small><h2 id="negative">...</h2><p>Hours below €0/MWh</p></article><article><small>RENEWABLE GENERATION SHARE</small><h2 id="renewable">...</h2><p>Share of fully observed generation</p></article><article><small>OBSERVED GRID LOAD</small><h2 id="load">...</h2><p>GWh, selected period</p></article></section>
 <nav class="tabs" aria-label="Dashboard views"><button class="active" data-tab="trends">Market trends</button><button data-tab="mix">Generation mix</button><button data-tab="calendar">Price calendar</button><button data-tab="quality">Data quality</button></nav>
 <section id="trends" class="panel active"><article class="chart"><h2>Hourly day-ahead electricity price</h2><p>Wholesale EUR/MWh. Prices below zero indicate negative-price periods.</p><div id="priceChart" class="plot"></div></article><article class="chart"><h2>Renewable output and price</h2><p>Each point is one observed hour. Relationships do not prove causation.</p><div id="scatterChart" class="plot"></div></article></section>
