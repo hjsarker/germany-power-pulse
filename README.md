@@ -1,10 +1,14 @@
 # ⚡ Germany Power Pulse
 
-### [🌐 View the public project on GitHub](https://github.com/hjsarker/germany-power-pulse)
+### [🌐 Open the live interactive dashboard](https://hjsarker.github.io/germany-power-pulse/)
+
+**Live website:** https://hjsarker.github.io/germany-power-pulse/
+
+[![GitHub Pages](https://img.shields.io/badge/GitHub%20Pages-Deployed-2BAE84)](https://hjsarker.github.io/germany-power-pulse/)
 
 **Portfolio links:** [Project overview](https://github.com/hjsarker/germany-power-pulse) · [Dashboard source code](https://github.com/hjsarker/germany-power-pulse/blob/main/app.py) · [Automated test results](https://github.com/hjsarker/germany-power-pulse/actions)
 
-> **Demo status:** The repository is public. A hosted interactive dashboard URL is **not available yet**. The Streamlit application can be run locally using the instructions below.
+> **Deployment:** GitHub Actions successfully published the static interactive dashboard with official SMARD market data on 24 October 2026. The separate Streamlit app can also be run locally.
 
 **The power behind the price.**
 
@@ -88,7 +92,7 @@ This is an **early portfolio release**, not a production service. Offline unit t
 
 ## Public demo
 
-A live demo can be deployed by connecting this repository to [Streamlit Community Cloud](https://share.streamlit.io/) and choosing `app.py` as the entrypoint. Deployment has not yet been completed.
+**[Open the interactive Germany Power Pulse dashboard](https://hjsarker.github.io/germany-power-pulse/)**. The free GitHub Pages website uses a scheduled GitHub Actions workflow to fetch official SMARD observations and publish a static data snapshot. The separate Streamlit application can be run locally.
 
 ## Source and attribution
 
